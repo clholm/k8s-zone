@@ -1,4 +1,5 @@
 a quick demo to observe `watch`ing `secrets`
+
 some code/manifests are llm-generated
 
 instructions:
