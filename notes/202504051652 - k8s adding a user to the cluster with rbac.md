@@ -22,9 +22,13 @@ scp cholm.csr user@control-plane-node-ip:~/k8s/
 ```bash
 # ssh to the control plane
 ssh user@control-plane-node-ip
+
 # sign the CSR with cluster's CA
 openssl x509 -req -in cholm.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out cholm.crt -days 365
-# retrieve the cert from the mac
+
+# exit the control plane node
+ctrl+D
+# retrieve the cert from the macbook
 scp user@control-plane-node-ip:~/k8s/cholm.crt .
 ```
 
@@ -61,6 +65,7 @@ for cluster-admin privileges:
 ```bash
 # access control-plane node
 ssh user@control-plane-node-ip
+
 # give user cluster-admin role
 kubectl create clusterrolebinding cholm-cluster-admin --clusterrole=cluster-admin --user=cholm
 ```
