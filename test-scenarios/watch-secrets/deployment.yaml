@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: secrets-watch-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: secrets-demo
+  template:
+    metadata:
+      labels:
+        app: secrets-demo
+    spec:
+      containers:
+      - name: app-container
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: app-credentials
+              key: username
+        - name: APP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-credentials
+              key: password
+        - name: DATABASE_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: connection-string
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: secrets-watch-demo
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Secret Watch Demo</title>
+    </head>
+    <body>
+      <h1>Secret Watch Demo</h1>
+      <p>This pod is using secrets from the Kubernetes cluster.</p>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: secrets-watch-demo
+spec:
+  selector:
+    app: secrets-demo
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

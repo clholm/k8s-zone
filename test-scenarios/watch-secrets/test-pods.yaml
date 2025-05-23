@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secrets-test-pod
+  namespace: secrets-watch-demo
+spec:
+  containers:
+  - name: secrets-test-container
+    image: busybox
+    command: ['sh', '-c', 'while true; do echo "Current secrets content:"; ls -la /mnt/secrets-app /mnt/secrets-db; cat /mnt/secrets-app/*; cat /mnt/secrets-db/*; sleep 30; done']
+    volumeMounts:
+    - name: app-credentials-volume
+      mountPath: "/mnt/secrets-app"
+      readOnly: true
+    - name: db-credentials-volume
+      mountPath: "/mnt/secrets-db"
+      readOnly: true
+  volumes:
+  - name: app-credentials-volume
+    secret:
+      secretName: app-credentials
+  - name: db-credentials-volume
+    secret:
+      secretName: db-credentials
