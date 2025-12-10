@@ -1,0 +1,64 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apply-secrets-demo
+---
+# Secret 1 - a database credential
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: apply-secrets-demo
+type: Opaque
+stringData:
+  username: admin
+  password: supersecretpassword123
+---
+# Secret 2 - an API key
+apiVersion: v1
+kind: Secret
+metadata:
+  name: api-key
+  namespace: apply-secrets-demo
+type: Opaque
+stringData:
+  key: sk-live-abc123xyz789
+---
+# Pod 1 - uses the database secret
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-app
+  namespace: apply-secrets-demo
+spec:
+  containers:
+  - name: app
+    image: busybox
+    command: ["sleep", "3600"]
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials
+          key: username
+    - name: DB_PASS
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials
+          key: password
+---
+# Pod 2 - uses the API key secret
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-client
+  namespace: apply-secrets-demo
+spec:
+  containers:
+  - name: client
+    image: busybox
+    command: ["sleep", "3600"]
+    envFrom:
+    - secretRef:
+        name: api-key
