@@ -1,2 +1,2 @@
-# k8s-zone-private
-misc kubernetes notes and manifest
+# k8s-zone
+misc kubernetes notes and manifests
