@@ -1,10 +1,10 @@
-# Namespace
+# namespace
 apiVersion: v1
 kind: Namespace
 metadata:
   name: apply-secrets-demo
 ---
-# Secret 1 - a database credential
+# secret 1 - a database credential
 apiVersion: v1
 kind: Secret
 metadata:
@@ -15,7 +15,7 @@ stringData:
   username: admin
   password: supersecretpassword123
 ---
-# Secret 2 - an API key
+# secret 2 - an API key
 apiVersion: v1
 kind: Secret
 metadata:
@@ -25,7 +25,7 @@ type: Opaque
 stringData:
   key: sk-live-abc123xyz789
 ---
-# Pod 1 - uses the database secret
+# pod 1 - uses the database secret
 apiVersion: v1
 kind: Pod
 metadata:
@@ -48,7 +48,7 @@ spec:
           name: db-credentials
           key: password
 ---
-# Pod 2 - uses the API key secret
+# pod 2 - uses the API key secret
 apiVersion: v1
 kind: Pod
 metadata:
