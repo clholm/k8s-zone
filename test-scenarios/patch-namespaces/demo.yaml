@@ -1,0 +1,41 @@
+# namespace with an initial label we'll try to modify
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: patch-namespaces-demo
+  labels:
+    environment: staging
+---
+# service account that will attempt to patch the namespace labels
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: namespace-patcher
+  namespace: patch-namespaces-demo
+---
+# role with only patch permission on namespaces (no get)
+# testing whether patch alone is sufficient to modify namespace labels
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: namespace-patcher-role
+  namespace: patch-namespaces-demo
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["patch"]
+---
+# bind the role to our service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: namespace-patcher-binding
+  namespace: patch-namespaces-demo
+subjects:
+- kind: ServiceAccount
+  name: namespace-patcher
+  namespace: patch-namespaces-demo
+roleRef:
+  kind: Role
+  name: namespace-patcher-role
+  apiGroup: rbac.authorization.k8s.io
